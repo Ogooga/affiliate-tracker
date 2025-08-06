@@ -131,8 +131,8 @@ function affiliate_tracker_options_page() {
                 if ($links) {
                     // Get offer types from settings
                     $offer_types_array = array(
-                        'With Deposit' => get_option('affiliate_tracker_label_with_deposit', ''),
-                        'No Deposit'   => get_option('affiliate_tracker_label_no_deposit', ''),
+                        'With deposit' => get_option('affiliate_tracker_label_with_deposit', ''),
+                        'No deposit'   => get_option('affiliate_tracker_label_no_deposit', ''),
                         'Live'         => get_option('affiliate_tracker_label_live', ''),
                         'Sport'        => get_option('affiliate_tracker_label_sport', ''),
                         'Custom'       => get_option('affiliate_tracker_label_custom', ''),
@@ -181,7 +181,7 @@ function affiliate_tracker_options_page() {
                         echo '<td class="col-type-of-offer">' . esc_html($type_of_offer_label) . '</td>';
 
                         // Shortcode column
-                        $shortcode = '[affiliate_link url="' . esc_attr($link->slug) . '" type_offer="' . esc_attr($type_of_offer_label) . '" casino="' . esc_attr($affiliate_cazino_value) . '" position="1"]LINK ANCHOR[/affiliate_link]';
+                        $shortcode = '[affiliate_link url="' . esc_attr($link->slug) . '" type_offer="' . esc_attr($type_of_offer_label) . '" casino="' . esc_attr($affiliate_cazino_value) . '" position="0"]LINK ANCHOR[/affiliate_link]';
                         echo '<td class="col-shortcode">' . $shortcode . '</td>';
 
                         echo '<td class="col-created-at">' . esc_html($link->created_at) . '</td>';

@@ -73,8 +73,8 @@ function affiliate_tracker_settings_page() {
         <?php
         // Build array of label => value
         $offer_types_array = array(
-            'With Deposit' => $label_with_deposit,
-            'No Deposit'   => $label_no_deposit,
+            'With deposit' => $label_with_deposit,
+            'No deposit'   => $label_no_deposit,
             'Live'         => $label_live,
             'Sport'        => $label_sport,
             'Custom'       => $label_custom,

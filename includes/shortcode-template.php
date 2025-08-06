@@ -2,16 +2,30 @@
 /**
  * Register [affiliate_link] shortcode directly from this file
  */
+
+// Include casino-variations.php for $casino_variants
+require_once plugin_dir_path(__FILE__) . 'casino-variations.php';
+
 function affiliate_tracker_shortcode($atts = array(), $content = null) {
     ob_start();
     $atts = shortcode_atts(array(
         'casino'    => '',
         'type_offer'=> '',
         'url'       => '',
-        'position'  => '',
+        'position'  => '0',
         'page_type' => '',
         'class'      => '',
+        'offer-location'  => '',
+        'id'        => '',
     ), $atts);
+
+    // Set id to aff-<current page ID> if not provided
+    if (empty($atts['id'])) {
+        $current_id = get_queried_object_id();
+        if ($current_id) {
+            $atts['id'] = 'aff-' . $current_id;
+        }
+    }
     // If location is not set, use the current page URL
     if (empty($atts['location'])) {
         $atts['location'] = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
@@ -36,6 +50,24 @@ function affiliate_tracker_shortcode($atts = array(), $content = null) {
             $atts['page_type'] = 'other';
         }
     }
+
+    // Map type_offer based on url patterns
+    if (strpos($atts['url'], 'tc-') !== false) {
+        $atts['type_offer'] = 'With deposit';
+    } elseif (strpos($atts['url'], 'bn-') !== false) {
+        $atts['type_offer'] = 'No deposit';
+    } elseif (strpos($atts['url'], 'cp-') !== false) {
+        $atts['type_offer'] = 'Sport';
+    } elseif (strpos($atts['url'], 'lc-') !== false) {
+        $atts['type_offer'] = 'Live';
+    }  else {
+        $atts['type_offer'] = 'Custom';
+    }
+    
+    global $casino_variants;
+    $casino_input = $atts['casino'];
+    $atts['casino'] = isset($casino_variants[$casino_input]) ? $casino_variants[$casino_input] : $casino_input;
+
     $link_text = $content ? $content : 'Affiliate Link';
     ?>
 
@@ -51,12 +83,13 @@ function affiliate_tracker_shortcode($atts = array(), $content = null) {
             $full_url = $site_url . $full_url;
         }
         ?>
-        <a class="<?php echo esc_attr($atts['class']); ?>" href="<?php echo esc_url($full_url); ?>" target="_blank" rel="noopener"
+        <a id="<?php echo esc_attr($atts['id']); ?>" class="affiliate-meta-link <?php echo esc_attr($atts['class']); ?>" href="<?php echo esc_url($full_url); ?>" target="_blank" rel="noopener noindex nofollow"
             data-casino="<?php echo esc_attr($atts['casino']); ?>"
             data-type-offer="<?php echo esc_attr($atts['type_offer']); ?>"
             data-location="<?php echo esc_attr($atts['location']); ?>"
             data-position="<?php echo esc_attr($atts['position']); ?>"
             data-page-type="<?php echo esc_attr($atts['page_type']); ?>"
+            data-offer-location="<?php echo esc_attr($atts['offer-location']); ?>"
         >
             <?php echo esc_html($link_text); ?>
         </a>

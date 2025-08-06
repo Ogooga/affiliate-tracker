@@ -31,17 +31,19 @@ function affiliate_tracker_casino_info_page() {
                         if (substr($display_title, -7) === ' Casino') {
                             $display_title = substr($display_title, 0, -7);
                         }
+
                         $slug = strtolower($display_title);
                         $slug_nospaces = str_replace(' ', '', $slug);
                         $slug_hyphens = str_replace(' ', '-', $slug);
                         if (strpos($slug, ' ') !== false) {
-                            $slug_formats_array[] = $slug;
-                            $slug_formats_array[] = $slug_nospaces;
-                            $slug_formats_array[] = $slug_hyphens;
+                            // Add each format as a separate key, but value is always no-space
+                            $slug_formats_array[$slug] = $slug_nospaces;
+                            $slug_formats_array[$slug_nospaces] = $slug_nospaces;
+                            $slug_formats_array[$slug_hyphens] = $slug_nospaces;
                             $slug_format = $slug . ', ' . $slug_nospaces . ', ' . $slug_hyphens;
                         } else {
-                            $slug_formats_array[] = $slug;
                             $slug_format = $slug;
+                            $slug_formats_array[$slug_format] = $slug_nospaces;
                         }
                         echo '<tr>';
                         echo '<td>' . $order . '</td>';
@@ -58,6 +60,34 @@ function affiliate_tracker_casino_info_page() {
                     // Display the array at the bottom of the page
                     echo '<h3>Slug Formats Array</h3>';
                     echo '<pre>' . print_r($slug_formats_array, true) . '</pre>';
+
+                    // Create array: Title => slug (no spaces for multi-word slugs)
+                    $title_slug_array = array();
+                    foreach ($posts as $post_id) {
+                        $title = get_the_title($post_id);
+                        $custom_title = get_option('affiliate_tracker_custom_title_' . $post_id, '');
+                        $display_title = $custom_title !== '' ? $custom_title : $title;
+                        // Remove suffixes from the key only
+                        $key_title = $display_title;
+                        $remove_suffixes = array(' Casino', ' casino', ' Cazino', ' cazino');
+                        foreach ($remove_suffixes as $suffix) {
+                            if (substr($key_title, -strlen($suffix)) === $suffix) {
+                                $key_title = substr($key_title, 0, -strlen($suffix));
+                                break;
+                            }
+                        }
+                        $slug = strtolower($display_title);
+                        // Remove whitespace for multi-word slugs
+                        $slug_nospaces = str_replace(' ', '', $slug);
+                        // Remove 'casino' (case-insensitive) from the end of the slug
+                        if (preg_match('/casino$/i', $slug_nospaces)) {
+                            $slug_nospaces = preg_replace('/casino$/i', '', $slug_nospaces);
+                        }
+                        $title_slug_array[$key_title] = $slug_nospaces;
+                    }
+                    echo '<h3>Title => Slug (no spaces)</h3>';
+                    echo '<pre>' . print_r($title_slug_array, true) . '</pre>';
+                    
                 } else {
                     echo '<p>No posts found for this custom post type.</p>';
                 }

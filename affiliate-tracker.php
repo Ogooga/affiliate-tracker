@@ -4,7 +4,7 @@ Plugin Name: Affiliate Tracker
 Plugin URI: https://example.com/
 Description: Track affiliate links coming from Pretty Link plugin.
 Version: 1.0
-Author: Your Name
+Author: Cosmin Samfira
 Author URI: https://example.com/
 License: GPL2
 */
