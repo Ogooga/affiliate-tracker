@@ -20,19 +20,23 @@ function affiliate_tracker_casino_info_page() {
                 if ($posts) {
                     echo '<h2>Posts in "' . esc_html($casino_cpt) . '"</h2>';
                     echo '<table class="widefat fixed" cellspacing="0" style="max-width:1000px;">';
-                    echo '<thead><tr><th>#</th><th>Title</th><th>Custom title</th><th>Casino slugs</th><th>Slug formats</th></tr></thead><tbody>';
+                    echo '<thead><tr><th>#</th><th>Title</th><th>Casino short</th><th>Custom title</th><th>Casino slugs</th><th>Slug formats</th></tr></thead><tbody>';
                     $order = 1;
                     $slug_formats_array = array();
                     foreach ($posts as $post_id) {
                         $title = get_the_title($post_id);
+                        $title_link = get_edit_post_link($post_id);
                         $custom_title = get_option('affiliate_tracker_custom_title_' . $post_id, '');
                         $display_title = $custom_title !== '' ? $custom_title : $title;
                         // Remove ' Casino' from the end of the display title if present
                         if (substr($display_title, -7) === ' Casino') {
                             $display_title = substr($display_title, 0, -7);
                         }
-
-                        $slug = strtolower($display_title);
+                        $casino_short = get_post_field('casino_name', $post_id);
+                        if (empty($casino_short)) {
+                            $casino_short = $title;
+                        }
+                        $slug = strtolower($casino_short);
                         $slug_nospaces = str_replace(' ', '', $slug);
                         $slug_hyphens = str_replace(' ', '-', $slug);
                         if (strpos($slug, ' ') !== false) {
@@ -45,9 +49,14 @@ function affiliate_tracker_casino_info_page() {
                             $slug_format = $slug;
                             $slug_formats_array[$slug_format] = $slug_nospaces;
                         }
+                        $casino_short = get_post_field('casino_name', $post_id);
+                        if (empty($casino_short)) {
+                            $casino_short = $title;
+                        }
                         echo '<tr>';
                         echo '<td>' . $order . '</td>';
-                        echo '<td>' . esc_html($title) . '</td>';
+                        echo '<td><a href="' . esc_url($title_link) . '" target="_blank">' . esc_html($title) . '</a></td>';
+                        echo '<td>' . esc_html($casino_short) . '</td>';
                         echo '<td><input type="text" name="affiliate_tracker_custom_title_' . esc_attr($post_id) . '" value="' . esc_attr($custom_title) . '" /></td>';
                         echo '<td>' . esc_html($slug) . '</td>';
                         echo '<td>' . esc_html($slug_format) . '</td>';

@@ -20,6 +20,7 @@ require_once plugin_dir_path(__FILE__) . 'includes/settings-page.php';
 require_once plugin_dir_path(__FILE__) . 'includes/shortcode-template.php';
 
 
+
 // Add the Affiliate Tracker menu and Settings submenu to the WordPress admin sidebar
 add_action('admin_menu', 'affiliate_tracker_add_admin_menu');
 
@@ -116,3 +117,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
             }
         }
     }
+
+    
+/**
+ * Get normalized (lowercased & cleaned) casino name for a given post ID.
+ * Logic:
+ * 1. Try ACF field 'casino_name'.
+ * 2. Fallback to post title if empty.
+ * 3. Remove standalone occurrences of 'Casino' or 'Cazino' (any case).
+ * 4. Collapse extra whitespace, trim, and lowercase final string.
+ *
+ * @param int $casino_id Post ID of the casino.
+ * @return string Normalized casino name (may be empty string if ID invalid).
+ */
+if ( ! function_exists( 'affiliate_tracker_normalize_casino_name' ) ) {
+    function affiliate_tracker_normalize_casino_name( $casino_id ) {
+        if ( empty( $casino_id ) ) {
+            return '';
+        }
+
+        $casino_name = '';
+
+        // Prefer ACF field if ACF is active.
+        if ( function_exists( 'get_field' ) ) {
+            $casino_name = get_field( 'casino_name', $casino_id );
+        }
+
+        if ( empty( $casino_name ) ) {
+            $casino_name = get_the_title( $casino_id );
+            if ( $casino_name ) {
+                // Remove standalone words Casino / Cazino (case-insensitive).
+                $casino_name = preg_replace( '/\b(Casino|Cazino)\b/i', '', $casino_name );
+            }
+        }
+
+        // Normalize whitespace, trim, and lowercase.
+        $casino_name = strtolower( trim( preg_replace( '/\s+/', ' ', (string) $casino_name ) ) );
+
+        return $casino_name;
+    }
+    //$casino_name = affiliate_tracker_normalize_casino_name($casino_ID);
+}

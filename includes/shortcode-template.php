@@ -60,8 +60,6 @@ function affiliate_tracker_shortcode($atts = array(), $content = null) {
         $atts['type_offer'] = 'Sport';
     } elseif (strpos($atts['url'], 'lc-') !== false) {
         $atts['type_offer'] = 'Live';
-    }  else {
-        $atts['type_offer'] = 'Custom';
     }
     
     global $casino_variants;
@@ -74,16 +72,16 @@ function affiliate_tracker_shortcode($atts = array(), $content = null) {
         <?php
         // Ensure the URL contains the domain
         $full_url = $atts['url'];
-        if (!empty($full_url) && strpos($full_url, 'http') !== 0) {
+        /*if (!empty($full_url) && strpos($full_url, 'http') !== 0) {
             // If not absolute, prepend site URL
             $site_url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'];
             if (substr($full_url, 0, 1) !== '/') {
                 $full_url = '/' . $full_url;
             }
             $full_url = $site_url . $full_url;
-        }
+        }*/
         ?>
-        <a id="<?php echo esc_attr($atts['id']); ?>" class="affiliate-meta-link <?php echo esc_attr($atts['class']); ?>" href="<?php echo esc_url($full_url); ?>" target="_blank" rel="noopener noindex nofollow"
+        <a id="<?php echo esc_attr($atts['id']); ?>" class="affiliate-meta-link referral <?php echo esc_attr($atts['class']); ?>" href="<?php echo esc_url($full_url); ?>" target="_blank" rel="noopener noindex nofollow"
             data-casino="<?php echo esc_attr($atts['casino']); ?>"
             data-type-offer="<?php echo esc_attr($atts['type_offer']); ?>"
             data-location="<?php echo esc_attr($atts['location']); ?>"
@@ -91,7 +89,7 @@ function affiliate_tracker_shortcode($atts = array(), $content = null) {
             data-page-type="<?php echo esc_attr($atts['page_type']); ?>"
             data-offer-location="<?php echo esc_attr($atts['offer-location']); ?>"
         >
-            <?php echo esc_html($link_text); ?>
+            <?php echo $link_text; ?>
         </a>
     <?php
     return ob_get_clean();
