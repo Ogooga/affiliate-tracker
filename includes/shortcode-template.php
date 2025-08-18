@@ -32,7 +32,28 @@ function affiliate_tracker_shortcode($atts = array(), $content = null) {
     }
     // If page_type is not set, detect WordPress page type
     if (empty($atts['page_type'])) {
-        if (is_front_page()) {
+        // Custom Slot CPT slug from settings (input id: affiliate_tracker_label_slot)
+        $slot_cpt = trim(get_option('affiliate_tracker_label_slot', ''));
+        $casino_cpt = trim(get_option('affiliate_tracker_casino_cpt', ''));
+        if ($slot_cpt && is_singular($slot_cpt)) {
+            $atts['page_type'] = 'single_slot';
+        } elseif ($slot_cpt && ( is_post_type_archive($slot_cpt)
+            || ( is_archive() && ($pt = get_query_var('post_type')) && (
+                    (is_array($pt) && in_array($slot_cpt, $pt, true)) || $pt === $slot_cpt
+                )
+            )
+        )) {
+            $atts['page_type'] = 'archive_slot';
+        } elseif ($casino_cpt && is_singular($casino_cpt)) {
+            $atts['page_type'] = 'single_casino';
+        } elseif ($casino_cpt && ( is_post_type_archive($casino_cpt)
+            || ( is_archive() && ($pt2 = get_query_var('post_type')) && (
+                    (is_array($pt2) && in_array($casino_cpt, $pt2, true)) || $pt2 === $casino_cpt
+                ))
+        )) {
+            $atts['page_type'] = 'archive_casino';
+
+        }elseif (is_front_page()) {
             $atts['page_type'] = 'front_page';
         } elseif (is_home()) {
             $atts['page_type'] = 'blog_home';

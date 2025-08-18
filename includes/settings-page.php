@@ -10,6 +10,7 @@ function affiliate_tracker_register_settings() {
     register_setting('affiliate_tracker_options_group', 'affiliate_tracker_label_live');
     register_setting('affiliate_tracker_options_group', 'affiliate_tracker_label_sport');
     register_setting('affiliate_tracker_options_group', 'affiliate_tracker_label_custom');
+    register_setting('affiliate_tracker_options_group', 'affiliate_tracker_label_slot');
 }
 add_action('admin_init', 'affiliate_tracker_register_settings');
 
@@ -28,6 +29,7 @@ function affiliate_tracker_settings_page() {
             $label_live = get_option('affiliate_tracker_label_live', '');
             $label_sport = get_option('affiliate_tracker_label_sport', '');
             $label_custom = get_option('affiliate_tracker_label_custom', '');
+            $label_slot = get_option('affiliate_tracker_label_slot', '');
             ?>
             <table class="form-table">
                 <tr valign="top">
@@ -64,6 +66,12 @@ function affiliate_tracker_settings_page() {
                     <th scope="row"><label for="affiliate_tracker_label_custom">Custom</label></th>
                     <td>
                         <input type="text" id="affiliate_tracker_label_custom" name="affiliate_tracker_label_custom" value="<?php echo esc_attr($label_custom); ?>" />
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <th scope="row"><label for="affiliate_tracker_label_slot">Slot slug</label></th>
+                    <td>
+                        <input type="text" id="affiliate_tracker_label_slot" name="affiliate_tracker_label_slot" value="<?php echo esc_attr($label_slot); ?>" />
                     </td>
                 </tr>
             </table>
